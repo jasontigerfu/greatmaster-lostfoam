@@ -1,0 +1,45 @@
+name: Assemble binary assets
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - gh-pages
+    paths:
+      - 'deploy-chunks/**'
+      - '.github/workflows/assemble-assets.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  assemble:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: gh-pages
+
+      - name: Assemble chunked binaries
+        run: |
+          python3 <<'PY'
+          import base64, glob, os
+          for chunk_dir in sorted(glob.glob('deploy-chunks/*')):
+              if not os.path.isdir(chunk_dir):
+                  continue
+              rel = os.path.basename(chunk_dir).replace('__', '/')
+              parts = sorted(glob.glob(os.path.join(chunk_dir, 'chunk_*.txt')))
+              if not parts:
+                  continue
+              data = ''.join(open(p, encoding='utf-8').read() for p in parts)
+              os.makedirs(os.path.dirname(rel) or '.', exist_ok=True)
+              with open(rel, 'wb') as out:
+                  out.write(base64.b64decode(data))
+              print(f'Assembled {rel} ({len(parts)} chunks)')
+          PY
+
+      - name: Commit assembled assets
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: Assemble binary assets from deploy-chunks
+          branch: gh-pages
