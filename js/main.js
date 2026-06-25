@@ -7,11 +7,13 @@ document.addEventListener("DOMContentLoaded", () => {
   const fadeElements = document.querySelectorAll(".fade-up");
   const contactForm = document.getElementById("contact-form");
 
+  // 滚动时导航栏阴影
   window.addEventListener("scroll", () => {
     header.classList.toggle("scrolled", window.scrollY > 20);
     updateActiveNav();
   });
 
+  // 移动端菜单
   menuToggle?.addEventListener("click", () => {
     menuToggle.classList.toggle("active");
     nav.classList.toggle("open");
@@ -24,6 +26,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
+  // 导航高亮
   function updateActiveNav() {
     let current = "";
     sections.forEach((section) => {
@@ -37,6 +40,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  // 滚动动画
   const observer = new IntersectionObserver(
     (entries) => {
       entries.forEach((entry) => {
@@ -50,6 +54,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   fadeElements.forEach((el) => observer.observe(el));
 
+  // 数字滚动动画
   const statNumbers = document.querySelectorAll("[data-count]");
   const statsObserver = new IntersectionObserver(
     (entries) => {
@@ -84,6 +89,7 @@ document.addEventListener("DOMContentLoaded", () => {
     requestAnimationFrame(step);
   }
 
+  // 联系表单（前端演示，可对接后端）
   contactForm?.addEventListener("submit", (e) => {
     e.preventDefault();
     const btn = contactForm.querySelector('button[type="submit"]');
